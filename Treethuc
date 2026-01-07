@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Thư viện cây xanh thông minh</title>
+
+<style>
+body{
+  margin:0;
+  font-family:Arial, sans-serif;
+  background:#f0fff4;
+}
+header{
+  background:#2f855a;
+  color:white;
+  padding:16px;
+  text-align:center;
+}
+#layout{
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:16px;
+  padding:16px;
+}
+aside, main{
+  background:white;
+  border-radius:14px;
+  padding:14px;
+  box-shadow:0 6px 15px rgba(0,0,0,.1);
+}
+input{
+  width:100%;
+  padding:8px;
+  margin-bottom:10px;
+  border-radius:10px;
+  border:1px solid #ccc;
+}
+button.tree{
+  width:100%;
+  padding:8px;
+  border:none;
+  border-radius:10px;
+  margin-bottom:6px;
+  cursor:pointer;
+  background:#e6fffa;
+}
+button.tree:hover,
+button.tree.active{
+  background:#38a169;
+  color:white;
+}
+img{
+  width:100%;
+  border-radius:12px;
+  margin-bottom:12px;
+}
+.badge{
+  display:inline-block;
+  background:#e6fffa;
+  color:#065f46;
+  padding:6px 12px;
+  border-radius:20px;
+  font-size:13px;
+  margin:4px 6px 4px 0;
+}
+h3{margin-top:14px}
+@media(max-width:768px){
+  #layout{grid-template-columns:1fr}
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <h2>🌿 THƯ VIỆN CÂY XANH THÔNG MINH</h2>
+  <p>Quét mã QR trên cây để xem thông tin khoa học ngay lập tức</p>
+</header>
+
+<div id="layout">
+
+<aside>
+  <input id="search" placeholder="Tìm kiếm cây...">
+  <div id="list"></div>
+</aside>
+
+<main id="info">
+  <p>Chọn một cây hoặc quét mã QR</p>
+</main>
+
+</div>
+
+<script>
+/* ===== CƠ SỞ DỮ LIỆU CÂY ===== */
+const trees = [
+{
+  id:1,
+  name:"Phượng vĩ",
+  scientific:"Delonix regia",
+  family:"Họ Đậu (Fabaceae)",
+  origin:"Madagascar",
+  year:2019,
+  height:"10–15 m",
+  leaf:"Lá kép lông chim",
+  flowering:"Tháng 5 – Tháng 7",
+  ecology:"Tạo bóng mát, cải thiện vi khí hậu, giảm nhiệt",
+  note:"Cây bóng mát lớn với hoa đỏ rực, thường được trồng trong khuôn viên trường học.",
+  image:"https://upload.wikimedia.org/wikipedia/commons/8/87/Royal_Poinciana.jpg"
+},
+{
+  id:2,
+  name:"Muồng hoàng yến",
+  scientific:"Cassia fistula",
+  family:"Họ Đậu (Fabaceae)",
+  origin:"Nam Á",
+  year:2020,
+  height:"8–12 m",
+  leaf:"Lá kép",
+  flowering:"Tháng 4 – Tháng 6",
+  ecology:"Thu hút côn trùng thụ phấn, cây cảnh quan",
+  note:"Nổi bật với các chùm hoa vàng dài rực rỡ.",
+  image:"https://i.imgur.com/Cl9Z0nU.jpg"
+},
+{
+  id:3,
+  name:"Cây sanh (cắt tỉa)",
+  scientific:"Ficus microcarpa",
+  family:"Họ Dâu tằm (Moraceae)",
+  origin:"Đông Nam Á",
+  year:2021,
+  height:"6–10 m",
+  leaf:"Lá đơn xanh quanh năm",
+  flowering:"Ít thấy",
+  ecology:"Lọc không khí, giảm bụi, làm mát môi trường",
+  note:"Thường được cắt tỉa tạo hình để trang trí cảnh quan.",
+  image:"https://i.imgur.com/Z6H5Z5F.jpg"
+}
+];
+
+const listDiv = document.getElementById("list");
+const info = document.getElementById("info");
+const search = document.getElementById("search");
+
+/* ===== HIỂN THỊ THÔNG TIN CÂY ===== */
+function showInfo(tree){
+  document.querySelectorAll(".tree").forEach(b=>b.classList.remove("active"));
+  const btn=document.querySelector(`[data-id="${tree.id}"]`);
+  if(btn) btn.classList.add("active");
+
+  info.innerHTML = `
+    <img src="${tree.image}">
+    <h2>${tree.name}</h2>
+
+    <div class="badge">🌱 Tên khoa học: ${tree.scientific}</div>
+    <div class="badge">🧬 Họ: ${tree.family}</div>
+    <div class="badge">🌍 Nguồn gốc: ${tree.origin}</div>
+    <div class="badge">📏 Chiều cao: ${tree.height}</div>
+    <div class="badge">🍃 Lá: ${tree.leaf}</div>
+    <div class="badge">🌼 Mùa hoa: ${tree.flowering}</div>
+    <div class="badge">📅 Năm trồng: ${tree.year}</div>
+
+    <h3>🌳 Giá trị sinh thái</h3>
+    <p>${tree.ecology}</p>
+
+    <h3>📝 Mô tả</h3>
+    <p>${tree.note}</p>
+  `;
+}
+
+/* ===== DANH SÁCH CÂY ===== */
+function render(data){
+  listDiv.innerHTML="";
+  data.forEach(t=>{
+    const b=document.createElement("button");
+    b.className="tree";
+    b.dataset.id=t.id;
+    b.textContent=t.name;
+    b.onclick=()=>showInfo(t);
+    listDiv.appendChild(b);
+  });
+}
+render(trees);
+
+/* ===== TÌM KIẾM ===== */
+search.oninput=()=>{
+  const q=search.value.toLowerCase();
+  render(trees.filter(t=>t.name.toLowerCase().includes(q)));
+};
+
+/* ===== TỰ ĐỘNG MỞ CÂY KHI QUÉT QR ===== */
+const params = new URLSearchParams(window.location.search);
+const treeId = params.get("tree");
+
+if(treeId){
+  const tree = trees.find(t=>t.id==treeId);
+  if(tree){
+    showInfo(tree);
+    info.scrollIntoView({behavior:"smooth"});
+  }
+}
+</script>
+
+</body>
+</html>
